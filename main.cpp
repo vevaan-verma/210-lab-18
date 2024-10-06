@@ -152,7 +152,7 @@ void outputReviews(ReviewNode* head) {
 	}
 }
 
-// getValidatedInteger() repeatedly asks the user for input until a valid choice integer is entered (either 1 or 2) | this is a more specific int validation method specifically for the list addition method choice
+// getValidatedChoice() repeatedly asks the user for input until a valid choice integer is entered (either 1 or 2) | this is a more specific int validation method specifically for the list addition method choice
 // arguments: none
 // returns: int - the validated integer input
 int getValidatedChoice() {
