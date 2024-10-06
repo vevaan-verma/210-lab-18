@@ -6,10 +6,13 @@ using namespace std;
 struct ReviewNode;
 
 /* FUNCTION PROTOTYPES */
-void addReviewFront(ReviewNode*& head, double rating, string review);
-void addReviewBack(ReviewNode*& head, double rating, string review);
-// void printReviews(ReviewNode* head);
+ReviewNode* getUserReview();
+void addReviewFront(ReviewNode*& head, ReviewNode*&);
+void addReviewBack(ReviewNode*& head, ReviewNode*&);
+void outputReviews(ReviewNode* head);
 int getValidatedChoice();
+double getValidatedRating(string prompt);
+char getValidatedChar(string prompt);
 
 // struct ReviewNode is a node that holds a rating and a review
 struct ReviewNode {
@@ -32,39 +35,63 @@ int main() {
 	cout << "Which linked list method should we use?" << endl;
 	cout << "    [1] New nodes are added at the head of the linked list" << endl;
 	cout << "    [2] New nodes are added at the tail of the linked list" << endl;
-	cout << "Choice: ";
+	cout << "    Choice: ";
 	addToFront = getValidatedChoice() == 1 ? true : false; // get the choice from the user and set addToFront to true if the choice is 1, false otherwise
+
+	char userChoice; // variable to store the user's choice
+
+	do {
+
+		ReviewNode* reviewNode = getUserReview(); // get a review from the user
+
+		if (addToFront) addReviewFront(head, reviewNode); // add the review to the front of the linked list
+		else addReviewBack(head, reviewNode); // add the review to the back of the linked list
+
+		userChoice = getValidatedChar("Add another review? (y / n): "); // prompt user to add another review
+
+	} while (userChoice == 'y'); // repeat until the user does not want to add another review
 
 	return 0;
 
 }
 
-// addReviewFront() adds a review to the front of the linked list
-// arguments: ReviewNode*& head - the head of the linked list, double rating - the rating of the review, string review - the review to add
-// returns: void
-void addReviewFront(ReviewNode*& head, double rating, string review) {
+// getUserReview() gets a review from the user and returns a pointer to a review node with the rating and review
+// arguments: none
+// returns: ReviewNode* - a pointer to a review node with the rating and review
+ReviewNode* getUserReview() {
 
-	ReviewNode* reviewNode = new ReviewNode; // create a new review node
-	reviewNode->rating = rating; // set the rating of the review node
-	reviewNode->review = review; // set the review of the review node
-	reviewNode->next = head; // set the next of the review node to the current head
-	head = reviewNode; // set the head to the review node
+	string review; // variable to store the review
+
+	double rating = getValidatedRating("Enter a rating (0 - 5): "); // get the validated rating from the user
+
+	cin.ignore(); // ignore input buffer (to prevent getline from reading the new line character)
+	cout << "Enter a review: "; // prompt user for review
+	getline(cin, review); // get the review from the user
+
+	return new ReviewNode{ rating, review, nullptr }; // return a new review node with the rating and review
+
+}
+
+// addReviewFront() adds a review to the front of the linked list
+// arguments: ReviewNode*& head - the head of the linked list, ReviewNode*& nodeToAdd - the review node to add to the front of the linked list
+// returns: void
+void addReviewFront(ReviewNode*& head, ReviewNode*& nodeToAdd) {
+
+	nodeToAdd->next = head; // set the next of the review node to the current head
+	head = nodeToAdd; // set the head to the review node
 
 }
 
 // addReviewBack() adds a review to the back of the linked list
-// arguments: ReviewNode*& head - the head of the linked list, double rating - the rating of the review, string review - the review to add
+// arguments: ReviewNode*& head - the head of the linked list, ReviewNode*& nodeToAdd - the review node to add to the back of the linked list
 // returns: void
-void addReviewBack(ReviewNode*& head, double rating, string review) {
+void addReviewBack(ReviewNode*& head, ReviewNode*& nodeToAdd) {
 
-	ReviewNode* reviewNode = new ReviewNode; // create a new review node
-	reviewNode->rating = rating; // set the rating of the review node
-	reviewNode->review = review; // set the review of the review node
-	reviewNode->next = nullptr; // set the next of the review node to nullptr
+	nodeToAdd->next = nullptr; // set the next of the review node to nullptr
 
 	if (head == nullptr) { // if the head does not exist (the linked list is empty)
 
-		head = reviewNode; // set the head to the review node
+		head = nodeToAdd; // set the head to the review node
 		return; // return
 
 	}
@@ -76,7 +103,7 @@ void addReviewBack(ReviewNode*& head, double rating, string review) {
 
 	// now the current node is the last node in the linked list
 
-	current->next = reviewNode; // set the next of the current node to the review node
+	current->next = nodeToAdd; // set the next of the current node to the review node
 
 }
 
@@ -96,5 +123,46 @@ int getValidatedChoice() {
 	}
 
 	return inputInt;
+
+}
+
+// getValidatedRating() repeatedly asks the user for input until a valid rating is entered (between 0.0 and 5.0) | this is a more specific double validation method specifically for the rating
+// arguments: prompt (string) - the prompt to display to the user when asking for input
+// returns: double - the validated double input
+double getValidatedRating(string prompt) {
+
+	double inputDbl; // variable to store the input (of type double)
+	cout << prompt;
+
+	while (!(cin >> inputDbl) || inputDbl < 0.0 || inputDbl > 5.0) { // if the input is not a double or the input is not between 0.0 and 5.0
+
+		cout << "Invalid input. Please try again: "; // output error message
+		cin.clear();
+		cin.ignore(INT_MAX, '\n'); // ignore the invalid input
+
+	}
+
+	return inputDbl;
+
+}
+
+// getValidatedChar() repeatedly asks the user for input until a valid char is entered
+// arguments: prompt (string) - the prompt to display to the user when asking for input
+// returns: char - the validated char input
+char getValidatedChar(string prompt) {
+
+	char inputChar; // variable to store the input (of type char)
+	cout << prompt;
+
+	while (!(cin >> inputChar) || (inputChar != 'y' && inputChar != 'n')) { // if the input is not a char or the input is not 'y' or 'n'
+
+		cout << "Invalid input. Please try again: "; // output error message
+		cin.clear();
+		cin.ignore(INT_MAX, '\n'); // ignore the invalid input
+
+	}
+
+	cin.ignore(INT_MAX, '\n'); // ignore the rest of the input (so it doesn't get read in the next input)
+	return inputChar;
 
 }
