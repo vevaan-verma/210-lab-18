@@ -2,6 +2,7 @@
 using namespace std;
 #include <iostream>
 #include <string>
+#include <climits> // for INT_MAX constant
 
 struct ReviewNode;
 
@@ -10,6 +11,7 @@ ReviewNode* getUserReview();
 void addReviewFront(ReviewNode*& head, ReviewNode*&);
 void addReviewBack(ReviewNode*& head, ReviewNode*&);
 void outputReviews(ReviewNode* head);
+double calculateAverageRating(ReviewNode* head);
 int getValidatedChoice();
 double getValidatedRating(string prompt);
 char getValidatedChar(string prompt);
@@ -50,6 +52,9 @@ int main() {
 		userChoice = getValidatedChar("Add another review? (y / n): "); // prompt user to add another review
 
 	} while (userChoice == 'y'); // repeat until the user does not want to add another review
+
+	outputReviews(head); // print the reviews in the linked list
+	cout << "    > Average: " << calculateAverageRating(head) << endl; // output the average rating of the reviews in the linked list
 
 	return 0;
 
@@ -105,6 +110,46 @@ void addReviewBack(ReviewNode*& head, ReviewNode*& nodeToAdd) {
 
 	current->next = nodeToAdd; // set the next of the current node to the review node
 
+}
+
+// calculateAverageRating() calculates the average rating of the reviews in the linked list
+// arguments: ReviewNode* head - the head of the linked list
+// returns: double - the average rating of the reviews in the linked list
+double calculateAverageRating(ReviewNode* head) {
+
+	ReviewNode* current = head; // create a current node and set it to the head
+	double totalRating = 0; // variable to store the total rating
+	int reviewCount = 0; // variable to store the number of reviews
+
+	while (current != nullptr) { // while the current node is not nullptr
+
+		totalRating += current->rating; // add the rating of the current node to the total rating
+		current = current->next; // set the current node to the next of the current node
+		reviewCount++; // increment the review count
+
+	}
+
+	return totalRating / reviewCount; // return the average rating
+
+}
+
+// outputReviews() outputs the reviews in the linked list
+// arguments: ReviewNode* head - the head of the linked list
+// returns: void
+void outputReviews(ReviewNode* head) {
+
+	ReviewNode* current = head; // create a current node and set it to the head
+	int reviewNumber = 1; // variable to store the review number
+
+	cout << "Outputting all reviews:" << endl; // output review header
+
+	while (current != nullptr) { // while the current node is not nullptr
+
+		cout << "    > Review #" << reviewNumber << ": " << current->rating << ": " << current->review << endl; // output the review number, rating, and review
+		current = current->next; // set the current node to the next of the current node
+		reviewNumber++; // increment the review number
+
+	}
 }
 
 // getValidatedInteger() repeatedly asks the user for input until a valid choice integer is entered (either 1 or 2) | this is a more specific int validation method specifically for the list addition method choice
